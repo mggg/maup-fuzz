@@ -40,7 +40,7 @@ State, traceback objects, and output from `sys.exc_info()` are automatically sto
 The pickled Python object will be named `crashdump-$ERROR-$TIME-$UID.pickle` where `$ERROR` is the type of error raised, `$TIME` is the result of `time.time()` and `UID` is a randomly generated string.
 
 This pickle file can be loaded post-mortem like so:
-```
+```python
 In [1]: import pickle
 
 In [2]: with open("crashdump-KeyboardInterrupt-1625761771.8713498-c773c94b.pickle", "rb") as f:
