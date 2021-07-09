@@ -25,6 +25,11 @@ pickling_support.install()
 def generate_voronoi(n: int = 1000):
     return generate.generate_geometries_voronoi(generate.generate_random_points(n))
 
+def generate_nesting(small_n: int = 10000, big_n: int = 1000):
+    small = generate_voronoi(small_n)
+    big, grouping = generate.random_combine_geometries(small, big_n)
+    return small, big, grouping
+
 def fuzz(func):
     @wraps(func)
     @app.command()
@@ -59,8 +64,7 @@ def fuzz(func):
 @fuzz
 def assign_nest(times: int = 0):
     try:
-        small = generate_voronoi(random.randint(5000, 15000))
-        big, grouping = generate.random_combine_geometries(small, random.randint(1000, 4999))
+        small, big, grouping = generate_nesting(random.randint(5000, 15000), random.randint(1000, 4999))
 
         assignment = maup.assign(small, big)
         assert (assignment == grouping).all()
@@ -75,7 +79,7 @@ def assign_nest(times: int = 0):
         raise
 
 @fuzz
-def intersections():
+def intersections_lateral():
     """
     Checks that intersections is commutative
     """
@@ -85,6 +89,24 @@ def intersections():
         pieces = maup.intersections(source, target)
         reverse_pieces = maup.intersections(target, source)
         assert len(pieces) == len(reverse_pieces)
+    except:
+        global state
+        state = locals()
+        raise
+
+@fuzz
+def intersections_nest():
+    """
+    Checks that intersections returns the more granular geometry when source and target nest
+    """
+    try:
+        source, target, grouping = generate_nesting(random.randint(5000, 15000), random.randint(1000, 4999))
+        pieces = maup.intersections(source, target)
+        reverse_pieces = maup.intersections(target, source)
+        assert len(pieces) == len(reverse_pieces)
+        assert len(source) > len(target)
+        assert len(pieces) == len(source)
+        assert len(reverse_pieces) == len(source)
     except:
         global state
         state = locals()
