@@ -22,7 +22,7 @@ app = typer.Typer()
 state = {}
 pickling_support.install()
 
-def fuzz_voronoi(n: int = 1000):
+def generate_voronoi(n: int = 1000):
     return generate.generate_geometries_voronoi(generate.generate_random_points(n))
 
 def fuzz(func):
@@ -59,7 +59,7 @@ def fuzz(func):
 @fuzz
 def assign_nest(times: int = 0):
     try:
-        small = fuzz_voronoi(random.randint(5000, 15000))
+        small = generate_voronoi(random.randint(5000, 15000))
         big, grouping = generate.random_combine_geometries(small, random.randint(1000, 4999))
 
         assignment = maup.assign(small, big)
@@ -80,8 +80,8 @@ def intersections():
     Checks that intersections is commutative
     """
     try:
-        source = fuzz_voronoi(random.randint(1000, 1200))
-        target = fuzz_voronoi(random.randint(1000, 1200))
+        source = generate_voronoi(random.randint(1000, 1200))
+        target = generate_voronoi(random.randint(1000, 1200))
         pieces = maup.intersections(source, target)
         reverse_pieces = maup.intersections(target, source)
         assert len(pieces) == len(reverse_pieces)
