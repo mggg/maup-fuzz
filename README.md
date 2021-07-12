@@ -7,7 +7,8 @@ python fuzz.py [function]
 ```
 Currently, you can fuzz:
 - `assign-nest` (checks if `maup.assign` works properly on perfectly nested, tiled geometries)
-- `intersections` (checks if `maup.intersections` is commutative on perfectly nested, tiled geometries)
+- `intersections-lateral` (checks if `maup.intersections` is commutative on perfectly nested, tiled geometries)
+- `intersections-nest` (checks if `maup.intersections` will return the source geometries when source nests perfectly within target geometries)
 
 
 ## Writing your own fuzzer
@@ -51,3 +52,6 @@ Out[3]: dict_keys(['times', 'small', 'exc_type', 'exc_value', 'exc_traceback'])
 ```
 
 As you can see, the local enviroment variables and useful traceback objects are saved.
+
+## Bugs Discovered Thus Far
+- `maup.intersections()` creates more geometries than either `source` or `target` when both are perfect tilings and source geometries nest perfectly within target geometries.

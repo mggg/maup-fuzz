@@ -13,6 +13,7 @@ import secrets
 from shapely import speedups
 import pickle
 import time
+import math
 
 import warnings; warnings.filterwarnings('ignore', "GeoSeries.isna", UserWarning)
 import warnings; warnings.filterwarnings('ignore', "", ShapelyDeprecationWarning)
@@ -29,6 +30,9 @@ def generate_nesting(small_n: int = 10000, big_n: int = 1000):
     small = generate_voronoi(small_n)
     big, grouping = generate.random_combine_geometries(small, big_n)
     return small, big, grouping
+
+def shape_equal(source, target):
+    return math.isclose(source.symmetric_difference(target).area, 0)
 
 def fuzz(func):
     @wraps(func)
@@ -89,6 +93,10 @@ def intersections_lateral():
         pieces = maup.intersections(source, target)
         reverse_pieces = maup.intersections(target, source)
         assert len(pieces) == len(reverse_pieces)
+        assert len(pieces) >= len(source)
+        assert len(pieces) >= len(target)
+        assert shape_equal(pieces.unary_union, source.unary_union)
+        assert shape_equal(pieces.unary_union, target.unary_union)
     except:
         global state
         state = locals()
@@ -107,6 +115,9 @@ def intersections_nest():
         assert len(source) > len(target)
         assert len(pieces) == len(source)
         assert len(reverse_pieces) == len(source)
+
+        assert shape_equal(pieces.unary_union, target.unary_union)
+        assert shape_equal(pieces.unary_union, source.unary_union)
     except:
         global state
         state = locals()
