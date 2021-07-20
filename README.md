@@ -54,4 +54,4 @@ Out[3]: dict_keys(['times', 'small', 'exc_type', 'exc_value', 'exc_traceback'])
 As you can see, the local enviroment variables and useful traceback objects are saved.
 
 ## Bugs Discovered Thus Far
-- `maup.intersections()` creates more geometries than either `source` or `target` when both are perfect tilings and source geometries nest perfectly within target geometries.
+- `maup.intersections()` creates more geometries than either `source` or `target` when both are perfect tilings and source geometries nest perfectly within target geometries. This is likely due to floating point precision issues as filtering by area above a certain small threshold (0.000001) resolves the issue usually.
